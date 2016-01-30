@@ -75,7 +75,29 @@ var gameLoop = function(ctx) {
 	return f;
 };
 
+// Game state
 var x = 100, y = 100;
+var grid = [];
+
+// Initialize the grid (initially completely empty)
+for(var i=0; i<10; ++i) {
+	grid.push([]);
+	for(var j=0; j<10; ++j) {
+		// Create a tile
+		var tile = {
+			isSolid: function() {return false;}
+		};
+
+		// Insert the tile into the grid
+		grid[i].push(tile);
+	}
+}
+
+// Add a few walls to the grid
+var wall = function(i,j) {grid[i][j].isSolid = function() {return true;};};
+wall(1, 1);
+wall(1, 2);
+wall(2, 1);
 
 var onUpdate = function(elapsed) {
 	if(keys[65]) //left
@@ -90,6 +112,15 @@ var onUpdate = function(elapsed) {
 
 var draw = function(ctx) {
 	ctx.fillText('blah',x,y);
+
+	// Draw the walls
+	for(var i=0; i<grid.length; ++i) {
+		for(var j=0; j<grid[i].length; ++j) {
+
+			// TODO: draw the walls
+
+		}
+	}
 };
 
 
