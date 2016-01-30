@@ -133,6 +133,7 @@ for(var i=0; i<10; ++i) {
 var onUpdate = function(elapsed) {
 	var speed = 0.1 / GRID_SIZE;
 
+	//player is not allowed to move while there is dialogue
 	if(!dialogue) {
 		if(keys[65]) //left
 			player.x -= speed * elapsed;
@@ -142,6 +143,10 @@ var onUpdate = function(elapsed) {
 			player.y -= speed * elapsed;
 		if(keys[64+19]) //down
 			player.y += speed * elapsed;
+	}
+	//for now, space turns off dialogue when its on.
+	else if(keys[32]) {
+		dialogue = false;
 	}
 
 	Game.collide(grid, player);
