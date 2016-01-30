@@ -13,6 +13,7 @@ window.cancelAnimationFrame = window.cancelAnimationFrame ||
 		return window.clearTimeout(_frame);
 	};
 
+	// test
 var WIDTH = 640;
 var HEIGHT = 480;
 var GRID_SIZE = 32;
