@@ -80,6 +80,7 @@ var gameLoop = function(ctx) {
 // Game state
 var player = {x: 4, y: 4};
 var grid = [];
+var dialogue = false;
 
 // Initialize the grid (initially completely empty)
 for(var i=0; i<10; ++i) {
@@ -113,14 +114,16 @@ for(var i=0; i<grid.length; ++i) {
 var onUpdate = function(elapsed) {
 	var speed = 0.1 / GRID_SIZE;
 
-	if(keys[65]) //left
-		player.x -= speed * elapsed;
-	if(keys[64+4]) //right
-		player.x += speed * elapsed;
-	if(keys[64+23]) //up
-		player.y -= speed * elapsed;
-	if(keys[64+19]) //down
-		player.y += speed * elapsed;
+	if(!dialogue) {
+		if(keys[65]) //left
+			player.x -= speed * elapsed;
+		if(keys[64+4]) //right
+			player.x += speed * elapsed;
+		if(keys[64+23]) //up
+			player.y -= speed * elapsed;
+		if(keys[64+19]) //down
+			player.y += speed * elapsed;
+	}
 
 	Game.collide(grid, player);
 };
@@ -142,6 +145,7 @@ var draw = function(ctx) {
 		}
 	}
 };
+
 
 
 }());
