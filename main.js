@@ -116,7 +116,8 @@ var onUpdate = function(elapsed) {
 };
 
 var draw = function(ctx) {
-	ctx.fillText('blah', player.x * GRID_SIZE, player.y * GRID_SIZE);
+	ctx.fillStyle = 'red';
+	ctx.fillRect(player.x * GRID_SIZE, player.y * GRID_SIZE, 24, 24);
 
 	// Draw the walls
 	for(var i=0; i<grid.length; ++i) {

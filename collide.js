@@ -70,11 +70,11 @@ Game.collide = function(grid, actor) {
 
 	var HALF_GIRTH  = 0.5 * PLAYER_WIDTH;
 	var HALF_HEIGHT = 0.5 * PLAYER_HEIGHT;
-	var x0 = function() {return actor.x - HALF_GIRTH;};
-	var x1 = function() {return actor.x + HALF_GIRTH;};
-	var y0 = function() {return actor.y - 2*HALF_HEIGHT;};
-	var y1 = function() {return actor.y - HALF_HEIGHT;};
-	var y2 = function() {return actor.y;};
+	var x0 = function() {return actor.x;};
+	var x1 = function() {return actor.x + 2*HALF_GIRTH;};
+	var y0 = function() {return actor.y;};
+	var y1 = function() {return actor.y + HALF_HEIGHT;};
+	var y2 = function() {return actor.y + 2*HALF_HEIGHT;};
 
 	resolveCollisions(x0(), y1(), {x: -1, y: 0});
 	resolveCollisions(x1(), y1(), {x: 1, y: 0});
