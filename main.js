@@ -13,7 +13,7 @@ window.cancelAnimationFrame = window.cancelAnimationFrame ||
 		return window.clearTimeout(_frame);
 	};
 
-	// test
+
 var WIDTH = 640;
 var HEIGHT = 480;
 var GRID_SIZE = Game.GRID_SIZE;
@@ -140,7 +140,17 @@ var draw = function(ctx) {
 			}
 		}
 	}
+	
+	// Text Dialogue Boxes
+	dialogueBox(ctx, "test dialogue");
+	
 };
 
+var dialogueBox = function(ctx, text) {
+	ctx.fillStyle = 'gray';
+	ctx.fillRect(WIDTH/2, HEIGHT/2, 400, 200);
+	ctx.fillStyle = 'black';
+	ctx.fillText(text, (WIDTH/2) + 20, HEIGHT/2 + 20)
+};
 
 }());
