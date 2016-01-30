@@ -112,7 +112,7 @@ var gameLoop = function(ctx) {
 // Game state
 var player = {x: 4, y: 4};
 var grid = [];
-var dialogue = false;
+var dialogue = true;
 
 // Initialize the grid (initially completely empty)
 for(var i=0; i<10; ++i) {
@@ -166,16 +166,46 @@ var draw = function(ctx) {
 	}
 	
 	// Text Dialogue Boxes
-	if(dialogue){dialogueBox(ctx, "test dialogue");}
+	if(dialogue){dialogueBox(ctx, "lsakjd fdsfsdj flkdsjflks kldsfjf fd jfdfd jfdd jdsks djfjdkfdkej", false);}
 	
 };
 
-var dialogueBox = function(ctx, text) {
+var dialogueBox = function(ctx, text, textOptions) {
+	// values
+	var LINEHEIGHT = 14;
+	var WRAPWIDTH = 200;
+	var FONT = "14px sans-serif";
+	var BOXWIDTH = 400;
+	var BOXHEIGHT = 200;
+	var PADDING = 20;
+	var bTextOptions = textOptions;
+	
+	ctx.font = FONT;
 	ctx.fillStyle = 'gray';
-	ctx.fillRect(WIDTH/2, HEIGHT/2, 400, 200);
+	ctx.fillRect(WIDTH/2, HEIGHT/2, BOXWIDTH, BOXHEIGHT);
 	ctx.fillStyle = 'black';
-	ctx.fillText(text, (WIDTH/2) + 20, HEIGHT/2 + 20)
+	wrapText(ctx, text, (WIDTH/2) + PADDING, HEIGHT/2 + PADDING, WRAPWIDTH, LINEHEIGHT)
 };
+
+function wrapText(context, text, x, y, maxWidth, lineHeight) {
+	var words = text.split(' ');
+	var line = '';
+
+	for(var n = 0; n < words.length; n++) {
+	  var testLine = line + words[n] + ' ';
+	  var metrics = context.measureText(testLine);
+	  var testWidth = metrics.width;
+	  if (testWidth > maxWidth && n > 0) {
+		context.fillText(line, x, y);
+		line = words[n] + ' ';
+		y += lineHeight;
+	  }
+	  else {
+		line = testLine;
+	  }
+	}
+	context.fillText(line, x, y);
+}
 
 
 }());
