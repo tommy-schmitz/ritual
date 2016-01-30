@@ -108,7 +108,6 @@ var gameLoop = function(ctx) {
 	return f;
 };
 
-<<<<<<< HEAD
 // Game state
 var player = {x: 4, y: 4};
 var grid = [];
@@ -128,23 +127,8 @@ for(var i=0; i<10; ++i) {
 	}
 }
 
-// Add a few walls to the grid
-var wall = function(j,i) {grid[i][j].is_solid = function() {return true;};};
-wall(6, 6);
-wall(6, 5);
-wall(5, 6);
-//Put walls around the edge of the grid
-for(var j=0; j<grid[0].length; ++j) {
-	wall(j, 0);
-	wall(j, grid.length-1);
-}
-for(var i=0; i<grid.length; ++i) {
-	wall(0, i);
-	wall(grid[i].length-1, i);
-}
 
-=======
->>>>>>> origin/master
+
 var onUpdate = function(elapsed) {
 	var speed = 0.1 / GRID_SIZE;
 
