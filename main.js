@@ -131,9 +131,12 @@ var draw = function(ctx) {
 	// Draw the walls
 	for(var i=0; i<grid.length; ++i) {
 		for(var j=0; j<grid[i].length; ++j) {
-
-			// TODO: draw the walls
-
+			if(grid[i][j].is_solid()) {
+				var x = j*GRID_SIZE;
+				var y = i*GRID_SIZE;
+				ctx.fillStyle = 'black';
+				ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
+			}
 		}
 	}
 };
