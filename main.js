@@ -95,10 +95,19 @@ for(var i=0; i<10; ++i) {
 }
 
 // Add a few walls to the grid
-var wall = function(i,j) {grid[i][j].is_solid = function() {return true;};};
-wall(1, 1);
-wall(1, 2);
-wall(2, 1);
+var wall = function(j,i) {grid[i][j].is_solid = function() {return true;};};
+wall(6, 6);
+wall(6, 5);
+wall(5, 6);
+//Put walls around the edge of the grid
+for(var j=0; j<grid[0].length; ++j) {
+	wall(j, 0);
+	wall(j, grid.length-1);
+}
+for(var i=0; i<grid.length; ++i) {
+	wall(0, i);
+	wall(grid[i].length-1, i);
+}
 
 var onUpdate = function(elapsed) {
 	var speed = 1/GRID_SIZE;
