@@ -110,7 +110,7 @@ for(var i=0; i<grid.length; ++i) {
 }
 
 var onUpdate = function(elapsed) {
-	var speed = 1/GRID_SIZE;
+	var speed = 2/GRID_SIZE;
 
 	if(keys[65]) //left
 		player.x -= speed;
