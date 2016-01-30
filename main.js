@@ -53,23 +53,35 @@ window.onload = function() {
 		for(var j=0; j<w; ++j) {
 			(function() {
 
+				var id = map_data[j + w*i];
+
 				var is_wall;
-				if(map_data[j + w*i] == 46)
+				if(id == 46)
 					is_wall = true;
 				else
 					is_wall = false;
 
-				var tile = {is_solid: function() {return is_wall;}};
+				var tile = {
+					is_solid: function() {return is_wall;},
+					id: id
+				};
 				grid[i].push(tile);
 
 			}());
 		}
 	}
 
-	// Register all the event listeners
-	gameLoop(ctx)();
-	document.body.addEventListener("keydown", keydown, false);
-	document.body.addEventListener("keyup", keyup, false);
+	Game.loadImages(after_images_load(ctx));
+};
+
+var after_images_load = function(ctx) {
+
+	return function() {
+		// Register all the event listeners
+		gameLoop(ctx)();
+		document.body.addEventListener("keydown", keydown, false);
+		document.body.addEventListener("keyup", keyup, false);
+	};
 };
 
 var keys = {};
@@ -109,26 +121,23 @@ var gameLoop = function(ctx) {
 	return f;
 };
 
-// Game state
-var player = {x: 4, y: 4};
-var grid = [];
-var dialogue = false;
+var draw_tile = (function() {
+	var tileset = TileMaps.desert.tilesets[0];
+	var cols = tileset.columns;
+	var s = tileset.spacing;
+	var m = tileset.margin;
+	var iw = tileset.tilewidth;
+	var ih = tileset.tileheight;
 
-// Initialize the grid (initially completely empty)
-for(var i=0; i<10; ++i) {
-	grid.push([]);
-	for(var j=0; j<10; ++j) {
-		// Create a tile
-		var tile = {
-			is_solid: function() {return false;}
-		};
-
-		// Insert the tile into the grid
-		grid[i].push(tile);
-	}
-}
-
-
+	return function(ctx, id, x, y, w, h) {
+		id = id-1;
+		Game.drawImage(ctx, 'tiles.png',
+		               s + (m+iw) * (id%cols), s + (m+ih) * Math.floor(id/cols),
+		               iw, ih,
+		               x, y,
+		               w, h);
+	};
+}());
 
 var onUpdate = function(elapsed) {
 	var speed = 0.1 / GRID_SIZE;
@@ -148,26 +157,24 @@ var onUpdate = function(elapsed) {
 };
 
 var draw = function(ctx) {
+	// Draw the walls
+	for(var i=0; i<grid.length; ++i) {
+		for(var j=0; j<grid[i].length; ++j) {
+			var tile = grid[i][j];
+			var x = j*GRID_SIZE;
+			var y = i*GRID_SIZE;
+			draw_tile(ctx, tile.id, x, y, GRID_SIZE, GRID_SIZE);
+		}
+	}
+
 	// Draw the player
 	ctx.fillStyle = 'red';
 	var PSIZE = Game.PLAYER_SIZE;
 	ctx.fillRect(player.x * GRID_SIZE, player.y * GRID_SIZE, PSIZE, PSIZE);
 
-	// Draw the walls
-	for(var i=0; i<grid.length; ++i) {
-		for(var j=0; j<grid[i].length; ++j) {
-			if(grid[i][j].is_solid()) {
-				var x = j*GRID_SIZE;
-				var y = i*GRID_SIZE;
-				ctx.fillStyle = 'black';
-				ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
-			}
-		}
-	}
-	
 	// Text Dialogue Boxes
-	if(dialogue){dialogueBox(ctx, "test dialogue");}
-	
+	if(dialogue)
+		dialogueBox(ctx, "test dialogue");
 };
 
 var dialogueBox = function(ctx, text) {
