@@ -142,6 +142,7 @@ var draw_tile = (function() {
 var onUpdate = function(elapsed) {
 	var speed = 0.1 / GRID_SIZE;
 
+	//player is not allowed to move while there is dialogue
 	if(!dialogue) {
 		if(keys[65]) //left
 			player.x -= speed * elapsed;
@@ -151,6 +152,10 @@ var onUpdate = function(elapsed) {
 			player.y -= speed * elapsed;
 		if(keys[64+19]) //down
 			player.y += speed * elapsed;
+	}
+	//for now, space turns off dialogue when its on.
+	else if(keys[32]) {
+		dialogue = false;
 	}
 
 	Game.collide(grid, player);
@@ -173,16 +178,47 @@ var draw = function(ctx) {
 	ctx.fillRect(player.x * GRID_SIZE, player.y * GRID_SIZE, PSIZE, PSIZE);
 
 	// Text Dialogue Boxes
-	if(dialogue)
-		dialogueBox(ctx, "test dialogue");
+	if(dialogue) {
+		dialogueBox(ctx, "lsakjd fdsfsdj flkdsjflks kldsfjf fd jfdfd jfdd jdsks djfjdkfdkej", false);
+	}
 };
 
-var dialogueBox = function(ctx, text) {
+var dialogueBox = function(ctx, text, textOptions) {
+	// values
+	var LINEHEIGHT = 14;
+	var WRAPWIDTH = 200;
+	var FONT = "14px sans-serif";
+	var BOXWIDTH = 400;
+	var BOXHEIGHT = 200;
+	var PADDING = 20;
+	var bTextOptions = textOptions;
+	
+	ctx.font = FONT;
 	ctx.fillStyle = 'gray';
-	ctx.fillRect(WIDTH/2, HEIGHT/2, 400, 200);
+	ctx.fillRect(WIDTH/2, HEIGHT/2, BOXWIDTH, BOXHEIGHT);
 	ctx.fillStyle = 'black';
-	ctx.fillText(text, (WIDTH/2) + 20, HEIGHT/2 + 20)
+	wrapText(ctx, text, (WIDTH/2) + PADDING, HEIGHT/2 + PADDING, WRAPWIDTH, LINEHEIGHT)
 };
+
+function wrapText(context, text, x, y, maxWidth, lineHeight) {
+	var words = text.split(' ');
+	var line = '';
+
+	for(var n = 0; n < words.length; n++) {
+	  var testLine = line + words[n] + ' ';
+	  var metrics = context.measureText(testLine);
+	  var testWidth = metrics.width;
+	  if (testWidth > maxWidth && n > 0) {
+		context.fillText(line, x, y);
+		line = words[n] + ' ';
+		y += lineHeight;
+	  }
+	  else {
+		line = testLine;
+	  }
+	}
+	context.fillText(line, x, y);
+}
 
 
 }());
