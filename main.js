@@ -15,6 +15,7 @@ window.cancelAnimationFrame = window.cancelAnimationFrame ||
 
 var WIDTH = 640;
 var HEIGHT = 480;
+var GRID_SIZE = 32;
 
 window.onload = function() {
 	var c = document.getElementById("myCanvas");
@@ -76,7 +77,7 @@ var gameLoop = function(ctx) {
 };
 
 // Game state
-var x = 100, y = 100;
+var player = {x: 4, y: 4};
 var grid = [];
 
 // Initialize the grid (initially completely empty)
@@ -85,7 +86,7 @@ for(var i=0; i<10; ++i) {
 	for(var j=0; j<10; ++j) {
 		// Create a tile
 		var tile = {
-			isSolid: function() {return false;}
+			is_solid: function() {return false;}
 		};
 
 		// Insert the tile into the grid
@@ -94,24 +95,28 @@ for(var i=0; i<10; ++i) {
 }
 
 // Add a few walls to the grid
-var wall = function(i,j) {grid[i][j].isSolid = function() {return true;};};
+var wall = function(i,j) {grid[i][j].is_solid = function() {return true;};};
 wall(1, 1);
 wall(1, 2);
 wall(2, 1);
 
 var onUpdate = function(elapsed) {
+	var speed = 1/GRID_SIZE;
+
 	if(keys[65]) //left
-		x--;
+		player.x -= speed;
 	if(keys[64+4]) //right
-		x++;
+		player.x += speed;
 	if(keys[64+23]) //up
-		y--;
+		player.y -= speed;
 	if(keys[64+19]) //down
-		y++;
+		player.y += speed;
+
+	Game.collide(grid, player);
 };
 
 var draw = function(ctx) {
-	ctx.fillText('blah',x,y);
+	ctx.fillText('blah', player.x * GRID_SIZE, player.y * GRID_SIZE);
 
 	// Draw the walls
 	for(var i=0; i<grid.length; ++i) {
