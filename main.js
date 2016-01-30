@@ -16,7 +16,11 @@ window.cancelAnimationFrame = window.cancelAnimationFrame ||
 	// test
 var WIDTH = 640;
 var HEIGHT = 480;
-var GRID_SIZE = 32;
+var GRID_SIZE = Game.GRID_SIZE;
+
+// Game state
+var player = {x: 4, y: 4};
+var grid = [];
 
 window.onload = function() {
 	var c = document.getElementById("myCanvas");
@@ -35,6 +39,33 @@ window.onload = function() {
 
 	ctx.fillText("Hello", 50, 50);
 
+	// Find the appropriate tilemap
+	var layer = TileMaps.desert.layers[0];
+
+	// Create the grid from the tilemap
+	var h = layer.height;
+	var w = layer.width;
+	var map_data = layer.data;
+	for(var i=0; i<h; ++i) {
+		grid.push([]);
+
+		for(var j=0; j<w; ++j) {
+			(function() {
+
+				var is_wall;
+				if(map_data[j + w*i] == 46)
+					is_wall = true;
+				else
+					is_wall = false;
+
+				var tile = {is_solid: function() {return is_wall;}};
+				grid[i].push(tile);
+
+			}());
+		}
+	}
+
+	// Register all the event listeners
 	gameLoop(ctx)();
 	document.body.addEventListener("keydown", keydown, false);
 	document.body.addEventListener("keyup", keyup, false);
@@ -77,39 +108,6 @@ var gameLoop = function(ctx) {
 	return f;
 };
 
-// Game state
-var player = {x: 4, y: 4};
-var grid = [];
-
-// Initialize the grid (initially completely empty)
-for(var i=0; i<10; ++i) {
-	grid.push([]);
-	for(var j=0; j<10; ++j) {
-		// Create a tile
-		var tile = {
-			is_solid: function() {return false;}
-		};
-
-		// Insert the tile into the grid
-		grid[i].push(tile);
-	}
-}
-
-// Add a few walls to the grid
-var wall = function(j,i) {grid[i][j].is_solid = function() {return true;};};
-wall(6, 6);
-wall(6, 5);
-wall(5, 6);
-//Put walls around the edge of the grid
-for(var j=0; j<grid[0].length; ++j) {
-	wall(j, 0);
-	wall(j, grid.length-1);
-}
-for(var i=0; i<grid.length; ++i) {
-	wall(0, i);
-	wall(grid[i].length-1, i);
-}
-
 var onUpdate = function(elapsed) {
 	var speed = 0.1 / GRID_SIZE;
 
@@ -128,7 +126,8 @@ var onUpdate = function(elapsed) {
 var draw = function(ctx) {
 	// Draw the player
 	ctx.fillStyle = 'red';
-	ctx.fillRect(player.x * GRID_SIZE, player.y * GRID_SIZE, 24, 24);
+	var PSIZE = Game.PLAYER_SIZE;
+	ctx.fillRect(player.x * GRID_SIZE, player.y * GRID_SIZE, PSIZE, PSIZE);
 
 	// Draw the walls
 	for(var i=0; i<grid.length; ++i) {
