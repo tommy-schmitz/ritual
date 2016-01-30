@@ -21,6 +21,7 @@ var GRID_SIZE = Game.GRID_SIZE;
 // Game state
 var player = {x: 4, y: 4};
 var grid = [];
+var dialogue = false;
 
 window.onload = function() {
 	var c = document.getElementById("myCanvas");
@@ -165,7 +166,7 @@ var draw = function(ctx) {
 	}
 	
 	// Text Dialogue Boxes
-	dialogueBox(ctx, "test dialogue");
+	if(dialogue){dialogueBox(ctx, "test dialogue");}
 	
 };
 
