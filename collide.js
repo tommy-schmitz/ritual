@@ -4,10 +4,12 @@
 // This is an "import" statement ...
 var Game = window.Game = window.Game || {};
 
+var GRID_SIZE = Game.GRID_SIZE = 8;
+Game.PLAYER_SIZE = 6;
 
-var PIXEL = 1/32;
-var PLAYER_WIDTH = 24 * PIXEL;
-var PLAYER_HEIGHT = 24 * PIXEL;
+var PLAYER_WIDTH = Game.PLAYER_SIZE / GRID_SIZE;
+var PLAYER_HEIGHT = Game.PLAYER_SIZE / GRID_SIZE;
+
 
 Game.collide = function(grid, actor) {
 	var result = [false,0];
