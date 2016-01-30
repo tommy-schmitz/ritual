@@ -125,6 +125,7 @@ var onUpdate = function(elapsed) {
 };
 
 var draw = function(ctx) {
+	// Draw the player
 	ctx.fillStyle = 'red';
 	ctx.fillRect(player.x * GRID_SIZE, player.y * GRID_SIZE, 24, 24);
 
