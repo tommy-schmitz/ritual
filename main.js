@@ -110,16 +110,16 @@ for(var i=0; i<grid.length; ++i) {
 }
 
 var onUpdate = function(elapsed) {
-	var speed = 2/GRID_SIZE;
+	var speed = 0.1 / GRID_SIZE;
 
 	if(keys[65]) //left
-		player.x -= speed;
+		player.x -= speed * elapsed;
 	if(keys[64+4]) //right
-		player.x += speed;
+		player.x += speed * elapsed;
 	if(keys[64+23]) //up
-		player.y -= speed;
+		player.y -= speed * elapsed;
 	if(keys[64+19]) //down
-		player.y += speed;
+		player.y += speed * elapsed;
 
 	Game.collide(grid, player);
 };
