@@ -90,6 +90,22 @@ var nonchoice = function(text, cb) {
 	};
 };
 
+var twochoice = function(text, textYes, textNo, cb1, cb2) {
+	if(cb1 === undefined)
+		cb1 = function() {dialogue = null;};
+	if(cb2 === undefined)
+		cb2 = function() {dialogue = null;};
+	dialogue = {
+		type: 'twochoice',
+		text: text,
+		textYes: 'Yes',
+		textNo: 'No',
+		cb1: cb1,
+		cb2: cb2,
+		respondYes: false	
+	};
+}
+
 window.onload = function() {
 	var c = document.getElementById("myCanvas");
 
@@ -178,12 +194,31 @@ var is_near = function(a1, a2, radius) {
 
 var keys = {};
 
+		
 var keydown = function(ke) {
 	// Update the 'keys' object.
 	if(ke.keyCode >= 32 && ke.keyCode <= 127)
 		keys[ke.keyCode] = true;
 
 	// Other game-related code ...
+	if(ke.keyCode === 66) // spacebar
+	{
+		twochoice("test dialogue");
+		
+	}
+		
+	// Dialogue choice
+	if(dialogue !== null && dialogue.type === 'twochoice') {
+		if(ke.keyCode === 64+23) // up
+			dialogue.respondYes = true;
+		if(ke.keyCode === 64+19) // down
+			dialogue.respondYes = false;
+		if(ke.keyCode === 32) // spacebar
+			if(dialogue.currentChoice === true)
+				dialogue.cb1();
+			else
+				dialogue.cb2();
+	}
 
 	// Upon pressing spacebar ...
 	if(ke.keyCode === 32) {
@@ -430,6 +465,22 @@ var dialogueBox = function(ctx, dlg, textOptions) {
 	ctx.fillStyle = 'white';
 	if(dlg.type === 'nonchoice')
 		wrapText(ctx, dlg.text, BX + PADDING, BY + PADDING, WRAPWIDTH, LINEHEIGHT)
+	else if(dlg.type === 'twochoice') {		
+		wrapText(ctx, dlg.text, BX + PADDING, BY + PADDING, WRAPWIDTH, LINEHEIGHT)	
+		ctx.fillStyle = '#333333';
+		ctx.fillRect(BX, BY + BOXHEIGHT, BOXWIDTH, BOXHEIGHT);
+		ctx.fillStyle = 'white';
+		ctx.fillText(dlg.textYes, BX + PADDING + 10, BY + BOXHEIGHT + PADDING);
+		ctx.fillText(dlg.textNo, BX + PADDING + 10, BY + BOXHEIGHT + 20 + PADDING);
+		if(dlg.respondYes) {
+			ctx.fillStyle = 'red';
+			ctx.fillRect(BX + 10, BY + BOXHEIGHT + 10, 10, 10);
+		}
+		else {
+			ctx.fillStyle = 'red';
+			ctx.fillRect(BX + 10, BY + BOXHEIGHT + 30, 10, 10);
+		}
+	}		
 	else
 		assert(false);
 };
