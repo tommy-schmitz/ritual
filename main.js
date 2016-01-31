@@ -174,6 +174,14 @@ window.onload = function() {
 		}
 	}
 
+	// Set the initial dialogue box
+	nonchoice('THE BOSS: "Ah! Just the person I wanted to see! How are you doing?"', function() {
+		nonchoice('THE BOSS: "GOOD. I need you to deliver these memos to their recipients. Think you can do that?"', function() {
+			assign_memos();
+			nonchoice('THE BOSS: "GOOD. Report back to me when you are done. Off you go!"');
+		});
+	});
+
 	Game.loadImages(after_images_load(ctx));
 };
 
@@ -267,6 +275,16 @@ var takeMemo = function(memo, index_in_shelf) {
 	nonchoice('You got a memo for ' + npc_names[memo.npc] + '.');
 }
 
+var assign_memos = function() {
+	var memo_set = progression[curr_progression++];
+	for(var i=0; i<memo_set.length; ++i) {
+		var memo = memo_set[i];
+		memo.x = 22.25;
+		memo.y = 1.25+i;
+		shelf.push(memo);
+	}
+};
+
 var talk_to_boss = function() {
 	if(shelf.length === 0  &&  inventory.length === 0) {
 		if(curr_progression === progression.length) {
@@ -276,13 +294,7 @@ var talk_to_boss = function() {
 		} else {
 			// Boss assigns new memos
 			nonchoice('More memos must be delivered.'); //##
-			var memo_set = progression[curr_progression++];
-			for(var i=0; i<memo_set.length; ++i) {
-				var memo = memo_set[i];
-				memo.x = 22.25;
-				memo.y = 1.25+i;
-				shelf.push(memo);
-			}
+			assign_memos();
 		}
 	} else {
 		// The player still needs to deliver some memos.
@@ -432,7 +444,7 @@ var draw = function(ctx) {
 
 	// Draw the memos on the shelf
 	for(var i=0; i<shelf.length; ++i)
-		Game.drawImage(ctx, 'hello.png',
+		Game.drawImage(ctx, 'envelope.png',
 		               (shelf[i].x-.25)*GRID_SIZE, (shelf[i].y-.25)*GRID_SIZE);
 
 	// Draw the boss

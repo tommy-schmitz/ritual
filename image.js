@@ -9,6 +9,7 @@ Game.drawImage = (function() {
 			'hello.png'
 			, 'tile_sheet.png'
 			, 'NPC.png'
+			, 'envelope.png'
 		];
 	
 	// Pre-load all images
