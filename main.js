@@ -219,7 +219,7 @@ var talk_to_boss = function() {
 			var memo_set = progression[curr_progression++];
 			for(var i=0; i<memo_set.length; ++i) {
 				var memo = memo_set[i];
-				memo.x = 12;
+				memo.x = 18;
 				memo.y = 7+i;
 				shelf.push(memo);
 			}
