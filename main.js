@@ -164,13 +164,16 @@ var after_images_load = function(ctx) {
 	};
 };
 
+var sqdist = function(a1, a2) {
+	var dx = a1.x-a2.x;
+	var dy = a1.y-a2.y;
+	return dx*dx + dy*dy;
+};
 var is_near = function(a1, a2, radius) {
 	if(radius === undefined)
 		radius = 1;
 
-	var dx = a1.x-a2.x;
-	var dy = a1.y-a2.y;
-	return dx*dx + dy*dy < radius * radius;
+	return sqdist(a1, a2) < radius * radius;
 };
 
 var keys = {};
@@ -188,21 +191,33 @@ var keydown = function(ke) {
 			dismiss_dialogue();
 		} else {
 			// If player is near NPCs, then open a dialogue box
-			if(is_near(player, boss, 2))
+			if(is_near(player, boss, 2)) {
 				talk_to_boss();
+				return;
+			}
 			for(var i=0; i<npcs.length; ++i)
-				if(is_near(player, npcs[i], 2))
+				if(is_near(player, npcs[i], 2)) {
 					talk_to_npc(npcs[i]);
+					return;
+				}
+
+			// Find nearest memo
+			var nearest = null;
+			var lowest = 2;
+			for(var i=0; i<shelf.length; ++i)
+				if(sqdist(shelf[i], player) < lowest) {
+					nearest = i;
+					lowest = sqdist(shelf[i], player);
+				}
 
 			// If player is near a memo, then take the memo
-			for(var i=0; i<shelf.length; ++i)
-				if(is_near(player, shelf[i])) {
-					var memo = shelf[i];
-					shelf.splice(i, 1);
-					inventory.push(memo);
-					nonchoice('You got a memo for ' + npc_names[memo.npc] + '.');  //##
-					break;
-				}
+			if(nearest !== null) {
+				var memo = shelf[nearest];
+				shelf.splice(nearest, 1);
+				inventory.push(memo);
+				nonchoice('You got a memo for ' + npc_names[memo.npc] + '.');  //##
+				return;
+			}
 		}
 	}
 };
@@ -219,8 +234,8 @@ var talk_to_boss = function() {
 			var memo_set = progression[curr_progression++];
 			for(var i=0; i<memo_set.length; ++i) {
 				var memo = memo_set[i];
-				memo.x = 18;
-				memo.y = 7+i;
+				memo.x = 18.25;
+				memo.y = 7.25+i;
 				shelf.push(memo);
 			}
 		}
@@ -373,7 +388,7 @@ var draw = function(ctx) {
 	// Draw the memos on the shelf
 	for(var i=0; i<shelf.length; ++i)
 		Game.drawImage(ctx, 'hello.png',
-		               shelf[i].x*GRID_SIZE, shelf[i].y*GRID_SIZE);
+		               (shelf[i].x-.25)*GRID_SIZE, (shelf[i].y-.25)*GRID_SIZE);
 
 	// Draw the boss
 	Game.drawImage(ctx, 'NPC.png',
