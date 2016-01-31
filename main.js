@@ -90,6 +90,22 @@ var nonchoice = function(text, cb) {
 	};
 };
 
+var twochoice = function(text, textYes, textNo, cb1, cb2) {
+	if(cb1 === undefined)
+		cb1 = function() {dialogue = null;};
+	if(cb2 === undefined)
+		cb2 = function() {dialogue = null;};
+	dialogue = {
+		type: 'twochoice',
+		text: text,
+		textYes: 'Yes',
+		textNo: 'No',
+		cb1: cb1,
+		cb2: cb2,
+		respondYes: false	
+	};
+}
+
 window.onload = function() {
 	var c = document.getElementById("myCanvas");
 
@@ -139,8 +155,8 @@ window.onload = function() {
 	for(var i=0; i<h; ++i) {
 		for(var j=0; j<w; ++j) {
 			var id = npc_data[j + w*i] - firstgid;
-			var x = j+.5;
-			var y = i+.5;
+			var x = j;
+			var y = i;
 
 			if(id < 4) //nobody
 				continue;
@@ -175,12 +191,31 @@ var is_near = function(a1, a2, radius) {
 
 var keys = {};
 
+		
 var keydown = function(ke) {
 	// Update the 'keys' object.
 	if(ke.keyCode >= 32 && ke.keyCode <= 127)
 		keys[ke.keyCode] = true;
 
 	// Other game-related code ...
+	if(ke.keyCode === 66) // spacebar
+	{
+		twochoice("test dialogue");
+		
+	}
+		
+	// Dialogue choice
+	if(dialogue !== null && dialogue.type === 'twochoice') {
+		if(ke.keyCode === 64+23) // up
+			dialogue.respondYes = true;
+		if(ke.keyCode === 64+19) // down
+			dialogue.respondYes = false;
+		if(ke.keyCode === 32) // spacebar
+			if(dialogue.currentChoice === true)
+				dialogue.cb1();
+			else
+				dialogue.cb2();
+	}
 
 	// Upon pressing spacebar ...
 	if(ke.keyCode === 32) {
@@ -188,10 +223,10 @@ var keydown = function(ke) {
 			dismiss_dialogue();
 		} else {
 			// If player is near NPCs, then open a dialogue box
-			if(is_near(player, boss, 2))
+			if(is_near(player, boss))
 				talk_to_boss();
 			for(var i=0; i<npcs.length; ++i)
-				if(is_near(player, npcs[i], 2))
+				if(is_near(player, npcs[i]))
 					talk_to_npc(npcs[i]);
 
 			// If player is near a memo, then take the memo
@@ -219,7 +254,7 @@ var talk_to_boss = function() {
 			var memo_set = progression[curr_progression++];
 			for(var i=0; i<memo_set.length; ++i) {
 				var memo = memo_set[i];
-				memo.x = 18;
+				memo.x = 12;
 				memo.y = 7+i;
 				shelf.push(memo);
 			}
@@ -375,15 +410,6 @@ var draw = function(ctx) {
 		Game.drawImage(ctx, 'hello.png',
 		               shelf[i].x*GRID_SIZE, shelf[i].y*GRID_SIZE);
 
-	// Draw the boss
-	Game.drawImage(ctx, 'NPC.png',
-	               (boss.x-1.25) * GRID_SIZE, (boss.y-2) * GRID_SIZE);
-
-	// Draw the NPCs
-	for(var i=0; i<npcs.length; ++i)
-		Game.drawImage(ctx, 'NPC.png',
-		               (npcs[i].x-.75) * GRID_SIZE, (npcs[i].y-.25) * GRID_SIZE);
-
 	// Draw the player
 	ctx.fillStyle = 'red';
 	var PSIZE = Game.PLAYER_SIZE;
@@ -415,6 +441,22 @@ var dialogueBox = function(ctx, dlg, textOptions) {
 	ctx.fillStyle = 'white';
 	if(dlg.type === 'nonchoice')
 		wrapText(ctx, dlg.text, BX + PADDING, BY + PADDING, WRAPWIDTH, LINEHEIGHT)
+	else if(dlg.type === 'twochoice') {		
+		wrapText(ctx, dlg.text, BX + PADDING, BY + PADDING, WRAPWIDTH, LINEHEIGHT)	
+		ctx.fillStyle = '#333333';
+		ctx.fillRect(BX, BY + BOXHEIGHT, BOXWIDTH, BOXHEIGHT);
+		ctx.fillStyle = 'white';
+		ctx.fillText(dlg.textYes, BX + PADDING + 10, BY + BOXHEIGHT + PADDING);
+		ctx.fillText(dlg.textNo, BX + PADDING + 10, BY + BOXHEIGHT + 20 + PADDING);
+		if(dlg.respondYes) {
+			ctx.fillStyle = 'red';
+			ctx.fillRect(BX + 10, BY + BOXHEIGHT + 10, 10, 10);
+		}
+		else {
+			ctx.fillStyle = 'red';
+			ctx.fillRect(BX + 10, BY + BOXHEIGHT + 30, 10, 10);
+		}
+	}		
 	else
 		assert(false);
 };
