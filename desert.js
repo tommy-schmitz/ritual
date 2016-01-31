@@ -41,7 +41,7 @@
         {
          "columns":8,
          "firstgid":1,
-         "image":"tmw_desert_spacing.png",
+         "image":"tiles.png",
          "imageheight":199,
          "imagewidth":265,
          "margin":1,
