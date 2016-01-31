@@ -104,34 +104,31 @@ window.onload = function() {
 	ctx.imageSmoothingEnabled = false;
 
 	// Create the grid from the tilemap
-	var layer = find(TileMaps.desert.layers, 'Ground')
+	var ground_layer = find(TileMaps.desert.layers, 'Ground')
 	var tileset = TileMaps.desert.tilesets[1];
-	var h = layer.height;
-	var w = layer.width;
-	var map_data = layer.data;
+	var h = ground_layer.height;
+	var w = ground_layer.width;
 	for(var i=0; i<h; ++i) {
 		grid.push([]);
 
 		for(var j=0; j<w; ++j) {
 			(function() {
-
-				var id = map_data[j + w*i] - tileset.firstgid;
-
 				var is_wall = false;
-				if(tileset.tileproperties[id] === undefined)
-					tileset.tileproperties[id] = {};
-				if(tileset.tileproperties[id].Solid !== undefined)
-					is_wall = true;
-				else
-					is_wall = false;
+				for(var k=0; k<TileMaps.desert.layers.length; ++k) {
+					var layer = TileMaps.desert.layers[k];
+					var map_data = layer.data;
+					var id = map_data[j + w*i] - tileset.firstgid;
+					if(tileset.tileproperties[id] === undefined)
+						tileset.tileproperties[id] = {};
+					if(tileset.tileproperties[id].Solid !== undefined)
+						is_wall = true;
+				}
 
 				var tile = {
 					is_solid: function() {return is_wall;},
-					id: id
 				};
 				grid[i].push(tile);
-
-			}());
+			}())
 		}
 	}
 
@@ -313,7 +310,9 @@ var draw_tile = (function() {
 	var firstgid = tileset.firstgid;
 
 	return function(ctx, id, x, y, w, h) {
-//		id = id-firstgid;
+		if(id < 0)
+			return;
+
 		Game.drawImage(ctx, 'tile_sheet.png',
 		               s + (m+iw) * (id%cols), s + (m+ih) * Math.floor(id/cols),
 		               iw, ih,
@@ -340,6 +339,21 @@ var onUpdate = function(elapsed) {
 	Game.collide(grid, player);
 };
 
+var draw_layer = function(ctx, layer) {
+	var tileset = TileMaps.desert.tilesets[1];
+	var h = layer.height;
+	var w = layer.width;
+	var map_data = layer.data;
+	for(var i=0; i<h; ++i) {
+		for(var j=0; j<w; ++j) {
+			var id = map_data[j + w*i] - tileset.firstgid;
+			var x = j*GRID_SIZE;
+			var y = i*GRID_SIZE;
+			draw_tile(ctx, id, x, y, GRID_SIZE, GRID_SIZE);
+		}
+	}
+};
+
 var draw = function(ctx) {
 	var SCALE = 2;
 	ctx.save();
@@ -348,13 +362,12 @@ var draw = function(ctx) {
 	ctx.translate(WIDTH/2/SCALE, HEIGHT/2/SCALE);
 
 	// Draw the backgrounds
-	for(var i=0; i<grid.length; ++i) {
-		for(var j=0; j<grid[i].length; ++j) {
-			var tile = grid[i][j];
-			var x = j*GRID_SIZE;
-			var y = i*GRID_SIZE;
-			draw_tile(ctx, tile.id, x, y, GRID_SIZE, GRID_SIZE);
-		}
+	for(var k=0; k<TileMaps.desert.layers.length; ++k) {
+		var layer = TileMaps.desert.layers[k];
+		if(layer.name === 'Annotation')
+			continue;
+
+		draw_layer(ctx, layer);
 	}
 
 	// Draw the memos on the shelf
