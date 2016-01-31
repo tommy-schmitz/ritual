@@ -321,6 +321,8 @@ var talk_to_boss = function() {
 		}, function() {
 			talk_to_boss_normal();
 		});
+	} else {
+		talk_to_boss_normal();
 	}
 };
 
@@ -353,7 +355,7 @@ var talk_to_npc = function(npc) {
 			display_memo(memo.msg, npc_names[npc.id]);
 
 			if(inventory.length === 0 &&
-					curr_progression === 1 &&   // should be 4
+					curr_progression === 5 &&
 					twoweeks.type === 'nonexistent')
 				twoweeks = {
 					type: 'onshelf',
