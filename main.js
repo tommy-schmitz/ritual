@@ -426,6 +426,8 @@ var draw_layer = function(ctx, layer) {
 	}
 };
 
+var FONT = "bold 14px sans-serif";
+var LINEHEIGHT = 14;
 var draw = function(ctx) {
 	var SCALE = 2;
 	ctx.save();
@@ -468,13 +470,22 @@ var draw = function(ctx) {
 	if(dialogue) {
 		dialogueBox(ctx, dialogue, false);
 	}
+
+	// Display inventory
+	var h = inventory.length * LINEHEIGHT + 3;
+	ctx.font = FONT;
+	ctx.fillStyle = 'rgba(32, 32, 32, 0.5)';
+	ctx.fillRect(0, 0, 150, h);
+	ctx.fillStyle = 'white';
+	for(var i=0; i<inventory.length; ++i) {
+		var text = 'Memo for ' + npc_names[inventory[i].npc];
+		ctx.fillText(text, 3, (1+i) * LINEHEIGHT);
+	}
 };
 
 var dialogueBox = function(ctx, dlg, textOptions) {
 	// values
-	var LINEHEIGHT = 14;
 	var WRAPWIDTH = 200;
-	var FONT = "14px sans-serif";
 	var BX = WIDTH/4;
 	var BY = HEIGHT/2+50;
 	var BOXWIDTH = WIDTH/2;
