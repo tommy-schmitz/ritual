@@ -157,7 +157,7 @@ var keydown = function(ke) {
 };
 
 var talk_to_boss = function() {
-	dialogue = 'Talking to boss';
+//	dialogue = 'Talking to boss';
 
 	if(shelf.length === 0  &&  inventory.length === 0) {
 		if(curr_progression === progression.length) {
@@ -181,6 +181,21 @@ var talk_to_boss = function() {
 
 var talk_to_npc = function(npc) {
 	dialogue = 'Talking to npc #' + npc.id;
+
+	// Does the player have a memo for this npc?
+	for(var i=0; i<inventory.length; ++i) {
+		var memo = inventory[i];
+		if(memo.npc === npc.id) {
+			inventory.splice(i, 1);
+			dialogue = nonchoice(memo.msg);
+			return;
+		}
+	}
+
+	var my_idle_text = idle_text[npc.id];
+	var text = my_idle_text[npc.curr_idle_text];
+	npc.curr_idle_text = (npc.curr_idle_text+1) % my_idle_text.length;
+	dialogue = nonchoice(text);
 };
 
 var keyup = function(ke) {
