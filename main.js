@@ -188,10 +188,10 @@ var keydown = function(ke) {
 			dismiss_dialogue();
 		} else {
 			// If player is near NPCs, then open a dialogue box
-			if(is_near(player, boss))
+			if(is_near(player, boss, 2))
 				talk_to_boss();
 			for(var i=0; i<npcs.length; ++i)
-				if(is_near(player, npcs[i]))
+				if(is_near(player, npcs[i], 2))
 					talk_to_npc(npcs[i]);
 
 			// If player is near a memo, then take the memo
