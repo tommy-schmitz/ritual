@@ -27,6 +27,19 @@ var GRID_SIZE = Game.GRID_SIZE;
 
 var curr_progression = 0;
 
+// The 'dialogue' global variable ...
+// It can be null, which means the game is currently playable.
+// It can also be a structure with the following form:
+//   {
+//     type: This must be equal to 'nonchoice'.
+//     text: A string to be displayed currently.
+//     cb:   A function to be called when the player presses spacebar.
+//   }
+// There are some helper functions:
+//   nonchoice(): creates a structure with the above form and sets the global
+//                to it
+//   
+
 // Game state
 var player = {x: 4, y: 4};
 var grid = [];
@@ -37,6 +50,24 @@ var inventory = [];
 var boss;
 var npcs = [];
 
+npc_names = {
+	'4': 'THE BOSS',
+	'5': 'DAISY',
+	'6': 'ROBERT',
+	'7': 'GALE',
+	'8': 'JASPER',
+	'9': 'FRANCINE',
+	'10': 'COLIN',
+	'11': 'SUSAN',
+	'12': 'TINA',
+	'13': 'VALERIE',
+	'14': 'PHIL',
+	'15': 'WALLACE',
+	'16': 'EDNA',
+	'17': 'MONICA',
+	'18': 'THE ENTREPRENEUR',
+};
+
 var find = function(a, name) {
 	for(var i=0; i<a.length; ++i)
 		if(a[i].name === name)
@@ -44,8 +75,19 @@ var find = function(a, name) {
 	assert(false);
 };
 
-var nonchoice = function(text) {
-	return text;
+var dismiss_dialogue = function() {
+	if(dialogue.type === 'nonchoice')
+		dialogue.cb();
+};
+var nonchoice = function(text, cb) {
+	if(cb === undefined)
+		cb = function() {dialogue = null;};
+
+	dialogue = {
+		type: 'nonchoice',
+		text: text,
+		cb: cb
+	};
 };
 
 window.onload = function() {
@@ -103,10 +145,10 @@ window.onload = function() {
 			var x = j;
 			var y = i;
 
-			if(id === -firstgid) //nobody
+			if(id < 4) //nobody
 				continue;
-			else if(id === 3) //boss
-				boss = {x: x, y: y};
+			else if(id === 4) //boss
+				boss = {id: id, x: x, y: y, curr_idle_text: 0};
 			else if(id < firstgid+24) //npc
 				npcs.push({id: id, x: x, y: y, curr_idle_text: 0});
 		}
@@ -146,7 +188,7 @@ var keydown = function(ke) {
 	// Upon pressing spacebar ...
 	if(ke.keyCode === 32) {
 		if(dialogue !== null) {
-			dialogue = null;
+			dismiss_dialogue();
 		} else {
 			// If player is near NPCs, then open a dialogue box
 			if(is_near(player, boss))
@@ -161,7 +203,7 @@ var keydown = function(ke) {
 					var memo = shelf[i];
 					shelf.splice(i, 1);
 					inventory.push(memo);
-					dialogue = 'You got a memo.';  //##
+					nonchoice('You got a memo for ' + npc_names[memo.npc] + '.');  //##
 					break;
 				}
 		}
@@ -169,15 +211,14 @@ var keydown = function(ke) {
 };
 
 var talk_to_boss = function() {
-//	dialogue = 'Talking to boss';
-
 	if(shelf.length === 0  &&  inventory.length === 0) {
 		if(curr_progression === progression.length) {
 			// No memos remain
-			dialogue = 'There are no more memos.';  //##
+//			nonchoice('There are no more memos.');  //##
+			display_idle_text(boss);
 		} else {
 			// Boss assigns new memos
-			dialogue = 'More memos must be delivered.'; //##
+			nonchoice('More memos must be delivered.'); //##
 			var memo_set = progression[curr_progression++];
 			for(var i=0; i<memo_set.length; ++i) {
 				var memo = memo_set[i];
@@ -187,27 +228,49 @@ var talk_to_boss = function() {
 			}
 		}
 	} else {
-		dialogue = 'You have work to do.';  //##
+		// The player still needs to deliver some memos.
+//		nonchoice('You have work to do.');  //##
+		display_idle_text(boss);
 	}
 };
 
 var talk_to_npc = function(npc) {
-//	dialogue = 'Talking to npc #' + npc.id;
+//	nonchoice('Talking to npc #' + npc.id);
 
 	// Does the player have a memo for this npc?
 	for(var i=0; i<inventory.length; ++i) {
 		var memo = inventory[i];
 		if(memo.npc === npc.id) {
 			inventory.splice(i, 1);
-			dialogue = nonchoice(memo.msg);
+			display_memo(memo.msg);
 			return;
 		}
 	}
 
+	display_idle_text(npc);
+};
+
+var display_memo = function(msg) {
+	if(typeof(msg) === 'string') {
+		nonchoice('You peek at the memo: "' + msg + '"');  //##
+	} else {
+		if(msg.length === 0)
+			dialogue = null;
+		else
+			nonchoice(msg[0], function() {
+				display_memo(msg.slice(1));
+			});
+	}
+};
+
+var display_idle_text = function(npc) {
 	var my_idle_text = idle_text[npc.id];
+
 	var text = my_idle_text[npc.curr_idle_text];
 	npc.curr_idle_text = (npc.curr_idle_text+1) % my_idle_text.length;
-	dialogue = nonchoice(text);
+
+	text = npc_names[npc.id] + ': "' + text + '"'; //##
+	nonchoice(text);
 };
 
 var keyup = function(ke) {
@@ -312,7 +375,7 @@ var draw = function(ctx) {
 	}
 };
 
-var dialogueBox = function(ctx, text, textOptions) {
+var dialogueBox = function(ctx, dlg, textOptions) {
 	// values
 	var LINEHEIGHT = 14;
 	var WRAPWIDTH = 200;
@@ -323,12 +386,15 @@ var dialogueBox = function(ctx, text, textOptions) {
 	var BOXHEIGHT = HEIGHT/2-100;
 	var PADDING = 20;
 	var bTextOptions = textOptions;
-	
+
 	ctx.font = FONT;
 	ctx.fillStyle = '#202020';
 	ctx.fillRect(BX, BY, BOXWIDTH, BOXHEIGHT);
 	ctx.fillStyle = 'white';
-	wrapText(ctx, text, BX + PADDING, BY + PADDING, WRAPWIDTH, LINEHEIGHT)
+	if(dlg.type === 'nonchoice')
+		wrapText(ctx, dlg.text, BX + PADDING, BY + PADDING, WRAPWIDTH, LINEHEIGHT)
+	else
+		assert(false);
 };
 
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
