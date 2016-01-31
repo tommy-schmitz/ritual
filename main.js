@@ -41,7 +41,7 @@ var curr_progression = 0;
 //   
 
 // Game state
-var player = {x: 4, y: 4};
+var player = {x: 19.75, y: 4};
 var grid = [];
 var dialogue = null;
 var shelf = [];
