@@ -382,7 +382,7 @@ var draw = function(ctx) {
 	// Draw the NPCs
 	for(var i=0; i<npcs.length; ++i)
 		Game.drawImage(ctx, 'NPC.png',
-		               (npcs[i].x+.25) * GRID_SIZE, (npcs[i].y-.25) * GRID_SIZE);
+		               (npcs[i].x-.75) * GRID_SIZE, (npcs[i].y-.25) * GRID_SIZE);
 
 	// Draw the player
 	ctx.fillStyle = 'red';
