@@ -17,16 +17,25 @@
 
 window.progression = [
 	[
-		{npc: 6, msg: [
-			"The memo says \"Robert: Please don't do that in the bathroom again.\"",
-			"ROBERT: \"Grr.\"",
-		]},
+		{npc: 6, msg: "Robert: Please don't do that in the bathroom again."},
 		{npc: 7, msg: "Gale: I need Phil's report on my desk before lunchtime."},
 	],
 	[
 		{npc: 8, msg: "Jasper: Golf this weekend?"},
 		{npc: 9, msg: "Francine: I am so sorry about last night."},
 		{npc: 10, msg: "Colin: There will be a package for you to sign after lunch."},
+	],
+	[
+		{
+			npc: 12,
+			msg: [
+				"My Business is none of your Business. Your Business is all of my Business. Welcome to the Business.",
+				"I've been waiting. Give me that.",
+				"...",
+				"I see. GOOD.",
+				"Tsk. Don't you listen? It's none of your Business."
+			]
+		},
 	],
 	[
 		{npc: 6, msg: "Robert: PLEASE don't do that in the bathroom again."},
@@ -39,6 +48,18 @@ window.progression = [
 		{npc: 8, msg: "Jasper: I WILL DESTROY YOU."},
 	],
 	[
+		{
+			npc: 13,
+			msg: [
+				"Hello there! My name is Valerie! What do you need from Square Resources?",
+				"Oooooh, it's here! Let me see.",
+				"...",
+				"Ah, that's GOOD.",
+				"I don't think I can tell you. Sorry!",
+			]
+		},
+	],
+	[
 		{npc: 6, msg: "Robert: We TALKED about this."},
 		{npc: 11, msg: "Susan: Did you tell Gale about the barbecue?"},
 		{npc: 10, msg: "Francine: You leave my mother out of this."},
@@ -47,6 +68,24 @@ window.progression = [
 		{npc: 7, msg: "Gale: There is no barbecue. And even if there was, there are no vegetarian options anyway."},
 		{npc: 10, msg: "Colin: That was completely uncalled for."},
 		{npc: 11, msg: "Susan: Don't talk to Gale. The whole company has been over this. Well, the whole company minus Gale."},
+	],
+	[
+		{
+			npc: 12,
+			msg: [
+				"Oh. It's you.",
+				"I suppose even a trashcan is an efficient container. Give me that memo.",
+				"...",
+				"...",
+				"...",
+				"Well that's... I had hoped....",
+				"I thought I had a real shot at Employee of the Hour this time.",
+				"But of course, it's Daisy. For the past 127 Hours, it's been Daisy.",
+				"I'll get my time in the limelight. It's a matter of persistence.",
+				"Why are you still here? Don't you know your place?",
+				"GOOD. Now go!"
+			]
+		},
 	],
 	[
 		{npc: 6, msg: "Robert: I swear, I've had it up to here. Do it ONE more time, I DARE you."},
@@ -59,6 +98,24 @@ window.progression = [
 		{npc: 8, msg: "Jasper: Wait, hold up. You... and Susan?!"},
 	],
 	[
+		{
+			npc: 13,
+			msg: [
+				"Oh hey, it's you again! What's up?",
+				"Another one? Well how about that! Let's open it up.",
+				"...",
+				"...",
+				"...",
+				"Oh.",
+				"It is what it is, I suppose.",
+				"I shouldn't tell you, but I could use a listening ear right now.",
+				"The Boss denied my request for an extra one-minute bathroom break.",
+				"I figured it was a long shot, but you might as well try, right?",
+				"I'll be fine. Nose to the grindstone, right?"
+			]
+		},
+	],
+	[
 		{npc: 7, msg: "Gale: Please send these documents to Valerie's inbox ASAP."},
 		{npc: 9, msg: "Francine: Oh I love it when you talk to me like that."},
 		{npc: 11, msg: "Susan: You should stay away from Jasper. He's never been checked, if you catch my drift."},
@@ -68,7 +125,22 @@ window.progression = [
 		{npc: 6, msg: "Robert: ... touche."},
 		{npc: 7, msg: "Gale: Are you STILL going on about the barbecue?"},
 	],
+	[	
 
+		{
+			npc: 14,
+			msg: [
+				"Who, why are -- why are you here? You're not usually here....",
+				"That, is that for me?",
+				"...",
+				"That, that is very -- very GOOD.",
+				"Oh, oh no, that in-information isn't -- it's not -- relevant to you....",
+				"What are you -- why are you looking around, like t-that?",
+				"Is there -- is there something behind me?",
+				"Isn't The B-Boss -- isn't he waiting for you...?",
+			]
+		},
+	],
 
 
 ];
