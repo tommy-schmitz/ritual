@@ -250,9 +250,10 @@ var keydown = function(ke) {
 			// If player is near a memo, then take the memo
 			if(nearest !== null) {
 				var memo = shelf[nearest];
-					twochoice('Do you want to take the memo?', 'Yes', 'No', function(){
-						takeMemo(memo, nearest);
-					});
+				var name = npc_names[memo.npc];
+				twochoice('It is a memo for '+name+'. Do you want to take it?', 'Yes', 'No', function(){  //##
+					takeMemo(memo, nearest);
+				});
 				return;
 			}
 
