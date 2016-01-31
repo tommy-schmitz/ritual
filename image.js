@@ -8,6 +8,7 @@ Game.drawImage = (function() {
 	var	imageList = [
 			'hello.png'
 			, 'tile_sheet.png'
+			, 'NPC.png'
 		];
 	
 	// Pre-load all images

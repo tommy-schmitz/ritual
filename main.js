@@ -139,8 +139,8 @@ window.onload = function() {
 	for(var i=0; i<h; ++i) {
 		for(var j=0; j<w; ++j) {
 			var id = npc_data[j + w*i] - firstgid;
-			var x = j;
-			var y = i;
+			var x = j+.5;
+			var y = i+.5;
 
 			if(id < 4) //nobody
 				continue;
@@ -374,6 +374,15 @@ var draw = function(ctx) {
 	for(var i=0; i<shelf.length; ++i)
 		Game.drawImage(ctx, 'hello.png',
 		               shelf[i].x*GRID_SIZE, shelf[i].y*GRID_SIZE);
+
+	// Draw the boss
+	Game.drawImage(ctx, 'NPC.png',
+	               (boss.x-1.25) * GRID_SIZE, (boss.y-2) * GRID_SIZE);
+
+	// Draw the NPCs
+	for(var i=0; i<npcs.length; ++i)
+		Game.drawImage(ctx, 'NPC.png',
+		               (npcs[i].x-.75) * GRID_SIZE, (npcs[i].y-.25) * GRID_SIZE);
 
 	// Draw the player
 	ctx.fillStyle = 'red';
