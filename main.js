@@ -279,8 +279,8 @@ var talk_to_boss = function() {
 			var memo_set = progression[curr_progression++];
 			for(var i=0; i<memo_set.length; ++i) {
 				var memo = memo_set[i];
-				memo.x = 18.25;
-				memo.y = 7.25+i;
+				memo.x = 22.25;
+				memo.y = 1.25+i;
 				shelf.push(memo);
 			}
 		}
@@ -299,7 +299,7 @@ var talk_to_npc = function(npc) {
 		var memo = inventory[i];
 		if(memo.npc === npc.id) {
 			inventory.splice(i, 1);
-			display_memo(memo.msg);
+			display_memo(memo.msg, npc_names[npc.id]);
 			return;
 		}
 	}
@@ -307,15 +307,15 @@ var talk_to_npc = function(npc) {
 	display_idle_text(npc);
 };
 
-var display_memo = function(msg) {
+var display_memo = function(msg, name) {
 	if(typeof(msg) === 'string') {
 		nonchoice('You peek at the memo: "' + msg + '"');  //##
 	} else {
 		if(msg.length === 0)
 			dialogue = null;
 		else
-			nonchoice(msg[0], function() {
-				display_memo(msg.slice(1));
+			nonchoice(name + ': "' + msg[0] + '"', function() {
+				display_memo(msg.slice(1), name);
 			});
 	}
 };
