@@ -13,28 +13,40 @@ window.cancelAnimationFrame = window.cancelAnimationFrame ||
 		return window.clearTimeout(_frame);
 	};
 
+var assert = function(b) {
+	if(!b) {
+		debugger;
+		throw 'assertion failed';
+	}
+};
+
 
 var WIDTH = 640;
 var HEIGHT = 480;
 var GRID_SIZE = Game.GRID_SIZE;
 
-var progression = [
-	[
-		{npc: 4},
-		{npc: 14},
-	]
-];
 var curr_progression = 0;
 
 // Game state
 var player = {x: 4, y: 4};
 var grid = [];
-var dialogue = false;
+var dialogue = null;
 var shelf = [];
 var inventory = [];
 
 var boss;
 var npcs = [];
+
+var find = function(a, name) {
+	for(var i=0; i<a.length; ++i)
+		if(a[i].name === name)
+			return a[i];
+	assert(false);
+};
+
+var nonchoice = function(text) {
+	return text;
+};
 
 window.onload = function() {
 	var c = document.getElementById("myCanvas");
@@ -50,7 +62,7 @@ window.onload = function() {
 	ctx.imageSmoothingEnabled = false;
 
 	// Create the grid from the tilemap
-	var layer = TileMaps.desert.layers[0];
+	var layer = find(TileMaps.desert.layers, 'Ground')
 	var tileset = TileMaps.desert.tilesets[1];
 	var h = layer.height;
 	var w = layer.width;
@@ -82,7 +94,7 @@ window.onload = function() {
 	}
 
 	// Find NPC positions in the tilemap
-	var layer_npc = TileMaps.desert.layers[1];
+	var layer_npc = find(TileMaps.desert.layers, 'Annotation');
 	var firstgid = TileMaps.desert.tilesets[0].firstgid;
 	var npc_data = layer_npc.data
 	for(var i=0; i<h; ++i) {
@@ -96,7 +108,7 @@ window.onload = function() {
 			else if(id === 3) //boss
 				boss = {x: x, y: y};
 			else if(id < firstgid+24) //npc
-				npcs.push({id: id, x: x, y: y});
+				npcs.push({id: id, x: x, y: y, curr_idle_text: 0});
 		}
 	}
 
@@ -133,8 +145,8 @@ var keydown = function(ke) {
 
 	// Upon pressing spacebar ...
 	if(ke.keyCode === 32) {
-		if(dialogue) {
-			dialogue = false;
+		if(dialogue !== null) {
+			dialogue = null;
 		} else {
 			// If player is near NPCs, then open a dialogue box
 			if(is_near(player, boss))
@@ -149,7 +161,7 @@ var keydown = function(ke) {
 					var memo = shelf[i];
 					shelf.splice(i, 1);
 					inventory.push(memo);
-					dialogue = 'You got a memo.';
+					dialogue = 'You got a memo.';  //##
 					break;
 				}
 		}
@@ -162,20 +174,20 @@ var talk_to_boss = function() {
 	if(shelf.length === 0  &&  inventory.length === 0) {
 		if(curr_progression === progression.length) {
 			// No memos remain
-			dialogue = 'There are no more memos.';
+			dialogue = 'There are no more memos.';  //##
 		} else {
 			// Boss assigns new memos
-			dialogue = 'More memos must be delivered.';
+			dialogue = 'More memos must be delivered.'; //##
 			var memo_set = progression[curr_progression++];
 			for(var i=0; i<memo_set.length; ++i) {
 				var memo = memo_set[i];
-				memo.x = 10;
+				memo.x = 12;
 				memo.y = 7+i;
 				shelf.push(memo);
 			}
 		}
 	} else {
-		dialogue = 'You have work to do.';
+		dialogue = 'You have work to do.';  //##
 	}
 };
 
@@ -251,7 +263,7 @@ var onUpdate = function(elapsed) {
 	var speed = 0.1 / GRID_SIZE;
 
 	//player is not allowed to move while there is dialogue
-	if(!dialogue) {
+	if(dialogue === null) {
 		if(keys[65]) //left
 			player.x -= speed * elapsed;
 		if(keys[64+4]) //right
