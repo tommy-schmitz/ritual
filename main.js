@@ -53,6 +53,7 @@ window.onload = function() {
 
 	// Create the grid from the tilemap
 	var layer = TileMaps.desert.layers[0];
+	var tileset = TileMaps.desert.tilesets[1];
 	var h = layer.height;
 	var w = layer.width;
 	var map_data = layer.data;
@@ -62,10 +63,12 @@ window.onload = function() {
 		for(var j=0; j<w; ++j) {
 			(function() {
 
-				var id = map_data[j + w*i];
+				var id = map_data[j + w*i] - tileset.firstgid;
 
-				var is_wall;
-				if(id == 46)
+				var is_wall = false;
+				if(tileset.tileproperties[id] === undefined)
+					tileset.tileproperties[id] = {};
+				if(tileset.tileproperties[id].Solid !== undefined)
 					is_wall = true;
 				else
 					is_wall = false;
@@ -82,7 +85,7 @@ window.onload = function() {
 
 	// Find NPC positions in the tilemap
 	var layer_npc = TileMaps.desert.layers[1];
-	var firstgid = TileMaps.desert.tilesets[1].firstgid;
+	var firstgid = TileMaps.desert.tilesets[0].firstgid;
 	var npc_data = layer_npc.data
 	for(var i=0; i<h; ++i) {
 		for(var j=0; j<w; ++j) {
@@ -213,16 +216,17 @@ var gameLoop = function(ctx) {
 };
 
 var draw_tile = (function() {
-	var tileset = TileMaps.desert.tilesets[0];
+	var tileset = TileMaps.desert.tilesets[1];
 	var cols = tileset.columns;
 	var s = tileset.spacing;
 	var m = tileset.margin;
 	var iw = tileset.tilewidth;
 	var ih = tileset.tileheight;
+	var firstgid = tileset.firstgid;
 
 	return function(ctx, id, x, y, w, h) {
-		id = id-1;
-		Game.drawImage(ctx, 'tiles.png',
+//		id = id-firstgid;
+		Game.drawImage(ctx, 'tile_sheet.png',
 		               s + (m+iw) * (id%cols), s + (m+ih) * Math.floor(id/cols),
 		               iw, ih,
 		               x, y,
@@ -249,6 +253,9 @@ var onUpdate = function(elapsed) {
 };
 
 var draw = function(ctx) {
+	ctx.save();
+	ctx.translate(-player.x*GRID_SIZE+WIDTH/2, -player.y*GRID_SIZE+HEIGHT/2);
+
 	// Draw the walls
 	for(var i=0; i<grid.length; ++i) {
 		for(var j=0; j<grid[i].length; ++j) {
@@ -273,6 +280,8 @@ var draw = function(ctx) {
 	if(dialogue) {
 		dialogueBox(ctx, dialogue, false);
 	}
+
+	ctx.restore();
 };
 
 var dialogueBox = function(ctx, text, textOptions) {

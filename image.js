@@ -7,7 +7,7 @@ Game.drawImage = (function() {
 	// List of all images in the game
 	var	imageList = [
 			'hello.png'
-			, 'tiles.png'
+			, 'tile_sheet.png'
 		];
 	
 	// Pre-load all images
