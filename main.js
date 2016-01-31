@@ -46,6 +46,9 @@ var grid = [];
 var dialogue = null;
 var shelf = [];
 var inventory = [];
+var twoweeks = {
+	type: 'nonexistent'
+};
 
 var boss;
 var npcs = [];
@@ -216,11 +219,12 @@ var keydown = function(ke) {
 		keys[ke.keyCode] = true;
 
 	// Other game-related code ...
-	if(ke.keyCode === 66) // spacebar
+/*
+	if(ke.keyCode === 66) // letter b
 	{
 		twochoice("test dialogue");
-		
 	}
+*/
 		
 	// Dialogue choice
 	if(dialogue !== null && dialogue.type === 'twochoice') {
@@ -248,21 +252,42 @@ var keydown = function(ke) {
 
 			// Find nearest memo
 			var nearest = null;
+			var nearest_i = null;
 			var lowest = 2;
 			for(var i=0; i<shelf.length; ++i)
 				if(sqdist(shelf[i], player) < lowest) {
-					nearest = i;
+					nearest = shelf[i];
+					nearest_i = i;
 					lowest = sqdist(shelf[i], player);
 				}
+			if(twoweeks.type === 'onshelf' && sqdist(twoweeks, player) < lowest) {
+				nearest = twoweeks;
+				lowest = sqdist(twoweeks, player);
+			}
 
-			// If player is near a memo, then take the memo
 			if(nearest !== null) {
-				var memo = shelf[nearest];
-				var name = npc_names[memo.npc];
-				twochoice('It is a memo for '+name+'. Do you want to take it?', 'Yes', 'No', function(){  //##
-					takeMemo(memo, nearest);
-				});
-				return;
+				if(nearest.type === 'memo') {
+					// If player is near a memo, then take the memo
+					(function() {
+						var memo = nearest;
+						var i = nearest_i;
+						var name = npc_names[memo.npc];
+						twochoice('It is a memo for '+name+'. Do you want to take it?', 'Yes', 'No', function(){  //##
+							takeMemo(memo, i);
+						});
+					}());
+					return;
+				} else if(nearest.type === 'onshelf') {
+					// Take the two-weeks notice
+					twochoice('Take the two-weeks notice form?', 'Yes', 'No', function() {
+						twoweeks = {
+							type: 'taken'
+						};
+						dialogue = null;
+					});
+				} else {
+					assert(false);
+				}
 			}
 
 		}
@@ -281,11 +306,25 @@ var assign_memos = function() {
 		var memo = memo_set[i];
 		memo.x = 22.25;
 		memo.y = 1.25+i;
+		memo.type = 'memo';
 		shelf.push(memo);
 	}
 };
 
 var talk_to_boss = function() {
+	if(twoweeks.type === 'taken') {
+		twochoice('Give the "Two weeks notice" form?', 'Yes', 'No', function() {
+			twoweeks = {
+				type: 'given'
+			};
+			dialogue = null;
+		}, function() {
+			talk_to_boss_normal();
+		});
+	}
+};
+
+var talk_to_boss_normal = function() {
 	if(shelf.length === 0  &&  inventory.length === 0) {
 		if(curr_progression === progression.length) {
 			// No memos remain
@@ -312,6 +351,16 @@ var talk_to_npc = function(npc) {
 		if(memo.npc === npc.id) {
 			inventory.splice(i, 1);
 			display_memo(memo.msg, npc_names[npc.id]);
+
+			if(inventory.length === 0 &&
+					curr_progression === 1 &&   // should be 4
+					twoweeks.type === 'nonexistent')
+				twoweeks = {
+					type: 'onshelf',
+					x: 22.25,
+					y: 4.25
+				};
+
 			return;
 		}
 	}
@@ -429,6 +478,9 @@ var draw_layer = function(ctx, layer) {
 var FONT = "bold 14px sans-serif";
 var LINEHEIGHT = 14;
 var draw = function(ctx) {
+	if(twoweeks.type === 'given')
+		return;
+
 	var SCALE = 2;
 	ctx.save();
 	ctx.scale(SCALE, SCALE);
@@ -448,6 +500,9 @@ var draw = function(ctx) {
 	for(var i=0; i<shelf.length; ++i)
 		Game.drawImage(ctx, 'envelope.png',
 		               (shelf[i].x-.25)*GRID_SIZE, (shelf[i].y-.25)*GRID_SIZE);
+	if(twoweeks.type === 'onshelf')
+		Game.drawImage(ctx, 'memo.png',
+		               (twoweeks.x-.25)*GRID_SIZE, (twoweeks.y-.25)*GRID_SIZE);
 
 	// Draw the boss
 	Game.drawImage(ctx, 'NPC.png',
@@ -473,6 +528,9 @@ var draw = function(ctx) {
 
 	// Display inventory
 	var h = inventory.length * LINEHEIGHT + 3;
+	if(twoweeks.type === 'taken') {
+		h += LINEHEIGHT;
+	}
 	ctx.font = FONT;
 	ctx.fillStyle = 'rgba(32, 32, 32, 0.5)';
 	ctx.fillRect(0, 0, 150, h);
@@ -480,6 +538,9 @@ var draw = function(ctx) {
 	for(var i=0; i<inventory.length; ++i) {
 		var text = 'Memo for ' + npc_names[inventory[i].npc];
 		ctx.fillText(text, 3, (1+i) * LINEHEIGHT);
+	}
+	if(twoweeks.type === 'taken') {
+		ctx.fillText('Two-weeks notice', 3, h-3);
 	}
 };
 
