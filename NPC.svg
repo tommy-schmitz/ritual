@@ -16,7 +16,7 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="NPC.svg"
-   inkscape:export-filename="C:\Users\qtbee\rect3338.png"
+   inkscape:export-filename="C:\Users\qtbee\Documents\ritual\NPC.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -28,9 +28,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.839192"
-     inkscape:cx="18.381879"
-     inkscape:cy="18.1638"
+     inkscape:zoom="11.2"
+     inkscape:cx="17.342264"
+     inkscape:cy="16.560731"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -64,5 +64,26 @@
        height="16"
        x="16"
        y="1020.3622" />
+    <rect
+       style="fill:#ffffff"
+       id="rect3342"
+       width="2.2321429"
+       height="5.7142859"
+       x="20.089285"
+       y="1022.3622" />
+    <rect
+       style="fill:#ffffff"
+       id="rect3342-3"
+       width="2.2321429"
+       height="5.7142859"
+       x="25.848213"
+       y="1022.3622" />
+    <rect
+       style="fill:#ffffff"
+       id="rect3363"
+       width="8.5714283"
+       height="1.1607143"
+       x="20"
+       y="1030.9336" />
   </g>
 </svg>
