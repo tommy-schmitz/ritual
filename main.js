@@ -78,6 +78,13 @@ var find = function(a, name) {
 var dismiss_dialogue = function() {
 	if(dialogue.type === 'nonchoice')
 		dialogue.cb();
+	else if(dialogue.type === 'twochoice') {
+		if(dialogue.respondYes === true)
+			dialogue.cb1();
+		else
+			dialogue.cb2();
+	}
+		
 };
 var nonchoice = function(text, cb) {
 	if(cb === undefined)
@@ -213,11 +220,6 @@ var keydown = function(ke) {
 			dialogue.respondYes = true;
 		if(ke.keyCode === 64+19) // down
 			dialogue.respondYes = false;
-		if(ke.keyCode === 32) // spacebar
-			if(dialogue.currentChoice === true)
-				dialogue.cb1();
-			else
-				dialogue.cb2();
 	}
 
 	// Upon pressing spacebar ...
@@ -248,14 +250,21 @@ var keydown = function(ke) {
 			// If player is near a memo, then take the memo
 			if(nearest !== null) {
 				var memo = shelf[nearest];
-				shelf.splice(nearest, 1);
-				inventory.push(memo);
-				nonchoice('You got a memo for ' + npc_names[memo.npc] + '.');  //##
+					twochoice('Do you want to take the memo?', 'Yes', 'No', function(){
+						takeMemo(memo, nearest);
+					});
 				return;
 			}
+
 		}
 	}
 };
+
+var takeMemo = function(memo, index_in_shelf) {
+	shelf.splice(index_in_shelf, 1);
+	inventory.push(memo);	
+	nonchoice('You got a memo for ' + npc_names[memo.npc] + '.');
+}
 
 var talk_to_boss = function() {
 	if(shelf.length === 0  &&  inventory.length === 0) {
