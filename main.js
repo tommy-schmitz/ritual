@@ -170,7 +170,7 @@ var talk_to_boss = function() {
 			for(var i=0; i<memo_set.length; ++i) {
 				var memo = memo_set[i];
 				memo.x = 10;
-				memo.y = 10+i;
+				memo.y = 7+i;
 				shelf.push(memo);
 			}
 		}
@@ -180,7 +180,7 @@ var talk_to_boss = function() {
 };
 
 var talk_to_npc = function(npc) {
-	dialogue = 'Talking to npc #' + npc.id;
+//	dialogue = 'Talking to npc #' + npc.id;
 
 	// Does the player have a memo for this npc?
 	for(var i=0; i<inventory.length; ++i) {
@@ -272,7 +272,7 @@ var draw = function(ctx) {
 	ctx.translate(-player.x*GRID_SIZE, -player.y*GRID_SIZE);
 	ctx.translate(WIDTH/2/SCALE, HEIGHT/2/SCALE);
 
-	// Draw the walls
+	// Draw the backgrounds
 	for(var i=0; i<grid.length; ++i) {
 		for(var j=0; j<grid[i].length; ++j) {
 			var tile = grid[i][j];
@@ -282,22 +282,22 @@ var draw = function(ctx) {
 		}
 	}
 
-	// Draw the player
-	ctx.fillStyle = 'red';
-	var PSIZE = Game.PLAYER_SIZE;
-	ctx.fillRect(player.x * GRID_SIZE, player.y * GRID_SIZE, PSIZE, PSIZE);
-
 	// Draw the memos on the shelf
 	for(var i=0; i<shelf.length; ++i)
 		Game.drawImage(ctx, 'hello.png',
 		               shelf[i].x*GRID_SIZE, shelf[i].y*GRID_SIZE);
 
+	// Draw the player
+	ctx.fillStyle = 'red';
+	var PSIZE = Game.PLAYER_SIZE;
+	ctx.fillRect(player.x * GRID_SIZE, player.y * GRID_SIZE, PSIZE, PSIZE);
+
+	ctx.restore();
+
 	// Text Dialogue Boxes
 	if(dialogue) {
 		dialogueBox(ctx, dialogue, false);
 	}
-
-	ctx.restore();
 };
 
 var dialogueBox = function(ctx, text, textOptions) {
@@ -305,16 +305,18 @@ var dialogueBox = function(ctx, text, textOptions) {
 	var LINEHEIGHT = 14;
 	var WRAPWIDTH = 200;
 	var FONT = "14px sans-serif";
-	var BOXWIDTH = 400;
-	var BOXHEIGHT = 200;
+	var BX = WIDTH/4;
+	var BY = HEIGHT/2+50;
+	var BOXWIDTH = WIDTH/2;
+	var BOXHEIGHT = HEIGHT/2-100;
 	var PADDING = 20;
 	var bTextOptions = textOptions;
 	
 	ctx.font = FONT;
-	ctx.fillStyle = 'gray';
-	ctx.fillRect(WIDTH/2, HEIGHT/2, BOXWIDTH, BOXHEIGHT);
-	ctx.fillStyle = 'black';
-	wrapText(ctx, text, (WIDTH/2) + PADDING, HEIGHT/2 + PADDING, WRAPWIDTH, LINEHEIGHT)
+	ctx.fillStyle = '#202020';
+	ctx.fillRect(BX, BY, BOXWIDTH, BOXHEIGHT);
+	ctx.fillStyle = 'white';
+	wrapText(ctx, text, BX + PADDING, BY + PADDING, WRAPWIDTH, LINEHEIGHT)
 };
 
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
