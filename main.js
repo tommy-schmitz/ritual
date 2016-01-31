@@ -41,7 +41,7 @@ var curr_progression = 0;
 //   
 
 // Game state
-var player = {x: 4, y: 4};
+var player = {x: 19.75, y: 4};
 var grid = [];
 var dialogue = null;
 var shelf = [];
@@ -78,6 +78,13 @@ var find = function(a, name) {
 var dismiss_dialogue = function() {
 	if(dialogue.type === 'nonchoice')
 		dialogue.cb();
+	else if(dialogue.type === 'twochoice') {
+		if(dialogue.respondYes === true)
+			dialogue.cb1();
+		else
+			dialogue.cb2();
+	}
+		
 };
 var nonchoice = function(text, cb) {
 	if(cb === undefined)
@@ -89,6 +96,22 @@ var nonchoice = function(text, cb) {
 		cb: cb
 	};
 };
+
+var twochoice = function(text, textYes, textNo, cb1, cb2) {
+	if(cb1 === undefined)
+		cb1 = function() {dialogue = null;};
+	if(cb2 === undefined)
+		cb2 = function() {dialogue = null;};
+	dialogue = {
+		type: 'twochoice',
+		text: text,
+		textYes: 'Yes',
+		textNo: 'No',
+		cb1: cb1,
+		cb2: cb2,
+		respondYes: false	
+	};
+}
 
 window.onload = function() {
 	var c = document.getElementById("myCanvas");
@@ -164,23 +187,40 @@ var after_images_load = function(ctx) {
 	};
 };
 
+var sqdist = function(a1, a2) {
+	var dx = a1.x-a2.x;
+	var dy = a1.y-a2.y;
+	return dx*dx + dy*dy;
+};
 var is_near = function(a1, a2, radius) {
 	if(radius === undefined)
 		radius = 1;
 
-	var dx = a1.x-a2.x;
-	var dy = a1.y-a2.y;
-	return dx*dx + dy*dy < radius * radius;
+	return sqdist(a1, a2) < radius * radius;
 };
 
 var keys = {};
 
+		
 var keydown = function(ke) {
 	// Update the 'keys' object.
 	if(ke.keyCode >= 32 && ke.keyCode <= 127)
 		keys[ke.keyCode] = true;
 
 	// Other game-related code ...
+	if(ke.keyCode === 66) // spacebar
+	{
+		twochoice("test dialogue");
+		
+	}
+		
+	// Dialogue choice
+	if(dialogue !== null && dialogue.type === 'twochoice') {
+		if(ke.keyCode === 64+23) // up
+			dialogue.respondYes = true;
+		if(ke.keyCode === 64+19) // down
+			dialogue.respondYes = false;
+	}
 
 	// Upon pressing spacebar ...
 	if(ke.keyCode === 32) {
@@ -188,24 +228,44 @@ var keydown = function(ke) {
 			dismiss_dialogue();
 		} else {
 			// If player is near NPCs, then open a dialogue box
-			if(is_near(player, boss, 2))
+			if(is_near(player, boss, 2)) {
 				talk_to_boss();
+				return;
+			}
 			for(var i=0; i<npcs.length; ++i)
-				if(is_near(player, npcs[i], 2))
+				if(is_near(player, npcs[i], 2)) {
 					talk_to_npc(npcs[i]);
+					return;
+				}
+
+			// Find nearest memo
+			var nearest = null;
+			var lowest = 2;
+			for(var i=0; i<shelf.length; ++i)
+				if(sqdist(shelf[i], player) < lowest) {
+					nearest = i;
+					lowest = sqdist(shelf[i], player);
+				}
 
 			// If player is near a memo, then take the memo
-			for(var i=0; i<shelf.length; ++i)
-				if(is_near(player, shelf[i])) {
-					var memo = shelf[i];
-					shelf.splice(i, 1);
-					inventory.push(memo);
-					nonchoice('You got a memo for ' + npc_names[memo.npc] + '.');  //##
-					break;
-				}
+			if(nearest !== null) {
+				var memo = shelf[nearest];
+				var name = npc_names[memo.npc];
+				twochoice('It is a memo for '+name+'. Do you want to take it?', 'Yes', 'No', function(){  //##
+					takeMemo(memo, nearest);
+				});
+				return;
+			}
+
 		}
 	}
 };
+
+var takeMemo = function(memo, index_in_shelf) {
+	shelf.splice(index_in_shelf, 1);
+	inventory.push(memo);	
+	nonchoice('You got a memo for ' + npc_names[memo.npc] + '.');
+}
 
 var talk_to_boss = function() {
 	if(shelf.length === 0  &&  inventory.length === 0) {
@@ -219,8 +279,8 @@ var talk_to_boss = function() {
 			var memo_set = progression[curr_progression++];
 			for(var i=0; i<memo_set.length; ++i) {
 				var memo = memo_set[i];
-				memo.x = 18;
-				memo.y = 7+i;
+				memo.x = 18.25;
+				memo.y = 7.25+i;
 				shelf.push(memo);
 			}
 		}
@@ -373,7 +433,7 @@ var draw = function(ctx) {
 	// Draw the memos on the shelf
 	for(var i=0; i<shelf.length; ++i)
 		Game.drawImage(ctx, 'hello.png',
-		               shelf[i].x*GRID_SIZE, shelf[i].y*GRID_SIZE);
+		               (shelf[i].x-.25)*GRID_SIZE, (shelf[i].y-.25)*GRID_SIZE);
 
 	// Draw the boss
 	Game.drawImage(ctx, 'NPC.png',
@@ -416,6 +476,22 @@ var dialogueBox = function(ctx, dlg, textOptions) {
 	ctx.fillStyle = 'white';
 	if(dlg.type === 'nonchoice')
 		wrapText(ctx, dlg.text, BX + PADDING, BY + PADDING, WRAPWIDTH, LINEHEIGHT)
+	else if(dlg.type === 'twochoice') {		
+		wrapText(ctx, dlg.text, BX + PADDING, BY + PADDING, WRAPWIDTH, LINEHEIGHT)	
+		ctx.fillStyle = '#333333';
+		ctx.fillRect(BX, BY + BOXHEIGHT, BOXWIDTH, BOXHEIGHT);
+		ctx.fillStyle = 'white';
+		ctx.fillText(dlg.textYes, BX + PADDING + 10, BY + BOXHEIGHT + PADDING);
+		ctx.fillText(dlg.textNo, BX + PADDING + 10, BY + BOXHEIGHT + 20 + PADDING);
+		if(dlg.respondYes) {
+			ctx.fillStyle = 'red';
+			ctx.fillRect(BX + 10, BY + BOXHEIGHT + 10, 10, 10);
+		}
+		else {
+			ctx.fillStyle = 'red';
+			ctx.fillRect(BX + 10, BY + BOXHEIGHT + 30, 10, 10);
+		}
+	}		
 	else
 		assert(false);
 };
