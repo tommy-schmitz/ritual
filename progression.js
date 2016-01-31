@@ -62,7 +62,7 @@ window.progression = [
 	[
 		{npc: 6, msg: "Robert: We TALKED about this."},
 		{npc: 11, msg: "Susan: Did you tell Gale about the barbecue?"},
-		{npc: 10, msg: "Francine: You leave my mother out of this."},
+		{npc: 9, msg: "Francine: You leave my mother out of this."},
 	],
 	[
 		{npc: 7, msg: "Gale: There is no barbecue. And even if there was, there are no vegetarian options anyway."},
