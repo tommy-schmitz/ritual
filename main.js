@@ -44,12 +44,10 @@ window.onload = function() {
 	
 	var ctx = c.getContext("2d");
 
-/*
 	ctx.mozImageSmoothingEnabled = false;
 	ctx.webkitImageSmoothingEnabled = false;
 	ctx.msImageSmoothingEnabled = false;
 	ctx.imageSmoothingEnabled = false;
-*/
 
 	// Create the grid from the tilemap
 	var layer = TileMaps.desert.layers[0];
@@ -253,8 +251,11 @@ var onUpdate = function(elapsed) {
 };
 
 var draw = function(ctx) {
+	var SCALE = 2;
 	ctx.save();
-	ctx.translate(-player.x*GRID_SIZE+WIDTH/2, -player.y*GRID_SIZE+HEIGHT/2);
+	ctx.scale(SCALE, SCALE);
+	ctx.translate(-player.x*GRID_SIZE, -player.y*GRID_SIZE);
+	ctx.translate(WIDTH/2/SCALE, HEIGHT/2/SCALE);
 
 	// Draw the walls
 	for(var i=0; i<grid.length; ++i) {

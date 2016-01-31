@@ -5,7 +5,7 @@
 var Game = window.Game = window.Game || {};
 
 var GRID_SIZE = Game.GRID_SIZE = 32;
-Game.PLAYER_SIZE = 24;
+Game.PLAYER_SIZE = 16;
 
 var PLAYER_WIDTH = Game.PLAYER_SIZE / GRID_SIZE;
 var PLAYER_HEIGHT = Game.PLAYER_SIZE / GRID_SIZE;
