@@ -262,6 +262,7 @@ window.idle_text = {
 
 	],
 	'16': [  //EDNA
+		"Business? Business is GOOD, didn't you hear? Or is it? Who knows? What does it matter so long as we are all still here? Complacency is comfortable. Routine is ritual. Tedium is therapy.",
 		"Edna's the name. Or perhaps it isn't. Or perhaps it IS. Or perhaps it isn't....",
 		"Is there being without motion?",
 		"Yes! Yes! I can see you are BUSY. But are you in MOTION?",
