@@ -212,8 +212,10 @@ var is_near = function(a1, a2, radius) {
 
 var keys = {};
 
-		
 var keydown = function(ke) {
+	if(ke.keyCode === 32)
+		ke.preventDefault();
+
 	// Update the 'keys' object.
 	if(ke.keyCode >= 32 && ke.keyCode <= 127)
 		keys[ke.keyCode] = true;
